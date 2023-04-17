@@ -1,9 +1,9 @@
 const fs = require('fs');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const allRecipes = JSON.parse(fs.readFileSync('allRecipes.json'));
+const links = JSON.parse(fs.readFileSync('Links.json'));
 
-console.log(allRecipes.length);
+console.log(links.length);
 let recipes = [];
 
 let recipe = {
@@ -19,7 +19,7 @@ let recipe = {
 };
 
 async function scrape(index) {
-    const response = await axios.get(allRecipes[index]);
+    const response = await axios.get(links[index]);
     const $ = cheerio.load(response.data);
 
     recipe.name = $('.svelte-1muv3s8').text();
@@ -34,8 +34,11 @@ async function scrape(index) {
         const text = $(el).find('.ingredient-text').contents().filter((_, c) => c.nodeType === 3).text().trim();
     
         if (quantity !== '') {
-            const fullDescription = `${quantity} ${unit} ${text}`;
-            recipe.ingredients.fullDescription.push(fullDescription.replace(/,/g, ''));
+            let fullDescription = `${quantity} ${unit} ${text}`;
+            fullDescription = fullDescription.replace(/,/g, '');
+            fullDescription = fullDescription.replace(/\s+/g, ' ');
+            fullDescription = fullDescription.replace(/(\d+)\s*-\s*(\d+)/g, '$1-$2');
+            recipe.ingredients.fullDescription.push(fullDescription);
             
             if (unit !== ''){
                 recipe.ingredients.keywords.push(unit);
@@ -61,7 +64,7 @@ async function scrape(index) {
 
 let promises = [];
 
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 40; i++) {
     let promise = new Promise((resolve) => {
         setTimeout(() => {
             scrape(i);
