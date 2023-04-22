@@ -52,7 +52,7 @@ async function scrape() {
         allRecipelLinks.push(...new Set(tempLinks));
     }
 
-    fs.writeFile('allRecipes.json', JSON.stringify(allRecipelLinks), (err) => {
+    fs.writeFile('./src/Links.json', JSON.stringify(allRecipelLinks), (err) => {
         if (err) throw err;
         console.log('Data written to file');
     });

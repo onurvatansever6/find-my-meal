@@ -1,7 +1,7 @@
 const fs = require('fs');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const links = JSON.parse(fs.readFileSync('Links.json'));
+const links = JSON.parse(fs.readFileSync('./src/Links.json'));
 
 console.log(links.length);
 let recipes = [];
@@ -73,7 +73,7 @@ for (let i = 0; i < links.length; i++) {
     
     if ((i + 1) % 100 === 0 || i === links.length - 1) {
         Promise.all(promises).then(() => {
-            fs.writeFileSync('Recipes.json', JSON.stringify(recipes), { flag: 'a' });
+            fs.writeFileSync('./src/Recipes.json', JSON.stringify(recipes), { flag: 'a' });
             console.log(`Data written to file for recipes ${i - 99} to ${i}`);
             recipes = [];
         });
