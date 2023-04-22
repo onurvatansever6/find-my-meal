@@ -18,7 +18,7 @@ const headers = {
   };
 
 
-  async function scrape(index) {
+async function scrape(index) {
     const response = await axios.get(links[index], { headers });
     const $ = cheerio.load(response.data);
 
@@ -38,15 +38,15 @@ const headers = {
         const quantity = $(el).find('.ingredient-quantity').text().trim();
         const unit = $(el).find('.ingredient-text a').first().text().trim();
         const text = $(el).find('.ingredient-text').contents().filter((_, c) => c.nodeType === 3).text().trim();
-    
+
         if (quantity !== '') {
             let fullDescription = `${quantity} ${unit} ${text}`;
             fullDescription = fullDescription.replace(/,/g, '');
             fullDescription = fullDescription.replace(/\s+/g, ' ');
             fullDescription = fullDescription.replace(/(\d+)\s*-\s*(\d+)/g, '$1-$2');
             recipe.ingredients.fullDescription.push(fullDescription);
-            
-            if (unit !== ''){
+
+            if (unit !== '') {
                 recipe.ingredients.keywords.push(unit);
             }
         }
@@ -70,10 +70,10 @@ for (let i = 0; i < links.length; i++) {
         }, i * 500);
     });
     promises.push(promise);
-    
+
     if ((i + 1) % 100 === 0 || i === links.length - 1) {
         Promise.all(promises).then(() => {
-            fs.writeFileSync('./src/Recipes.json', JSON.stringify(recipes), { flag: 'a' });
+            fs.writeFileSync('../src/Recipes.json', JSON.stringify(recipes), { flag: 'a' });
             console.log(`Data written to file for recipes ${i - 99} to ${i}`);
             recipes = [];
         });
